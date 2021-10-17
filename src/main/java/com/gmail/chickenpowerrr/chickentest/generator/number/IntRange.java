@@ -1,6 +1,6 @@
 package com.gmail.chickenpowerrr.chickentest.generator.number;
 
-import com.gmail.chickenpowerrr.chickentest.generator.restrictions.ParameterRestriction;
+import com.gmail.chickenpowerrr.chickentest.generator.ParameterRestriction;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
