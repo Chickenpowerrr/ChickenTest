@@ -1,10 +1,13 @@
 package com.gmail.chickenpowerrr.chickentest.generator;
 
-import com.gmail.chickenpowerrr.chickentest.generator.number.IntGenerator;
+import com.gmail.chickenpowerrr.chickentest.reflection.ReflectionHelper;
+import java.io.IOException;
 import java.io.Serial;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -19,25 +22,48 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
  */
 public class GeneratorManager {
 
-  private final Collection<GeneratorDescription> descriptions;
+  private final Map<GeneratorDescription, Class<?>> descriptions;
 
+  /**
+   * Loads the descriptions from the {@link GeneratorScanner}.
+   */
   public GeneratorManager() {
-    this.descriptions = new LinkedList<>();
-
-    addGenerators();
+    try {
+      this.descriptions = GeneratorScanner.getInstance().getGeneratorDescriptions();
+    } catch (IOException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
-   * Adds the default {@link Generator}s.
+   * Returns a fresh instance of a {@link Generator}, the type gets determined
+   * by the {@link GeneratorDescription} according to
+   * {@link #getGeneratorDescription(ParameterContext)}.
+   * The {@link Generator} should have a public constructor with
+   * {@link ParameterContext} as its only parameter.
+   *
+   * @param parameterContext the context of the value to be injected
+   * @param <T> the type of value that will be injected
+   * @return a fresh instance of a {@link Generator} that can generate
+   *         the requested type of value
+   * @throws ParameterResolutionException if the {@link Generator} class does not
+   *                                      have a public constructor with only the
+   *                                      {@link ParameterContext} as a parameter
+   * @see #getGeneratorDescription(ParameterContext)
    */
-  private void addGenerators() {
-    descriptions.add(new GeneratorDescription("IntGenerator", 1, IntGenerator::new) {
-      @Override
-      public boolean supports(ParameterContext context) {
-        return context.getParameter().getType().equals(Integer.class)
-            || context.getParameter().getType().equals(int.class);
-      }
-    });
+  @SuppressWarnings("unchecked")
+  public <T> Generator<T> getGenerator(ParameterContext parameterContext) throws ParameterResolutionException {
+    GeneratorDescription description = getGeneratorDescription(parameterContext);
+    Class<?> generatorClass = descriptions.get(description);
+    try {
+      return (Generator<T>) ReflectionHelper.getInstance(generatorClass,
+          new Class[] { ParameterContext.class }, parameterContext);
+    } catch (NoSuchMethodException e) {
+      throw new ParameterResolutionException(generatorClass.getName()
+          + " should have a public constructor with 'ParameterContext' as its parameter");
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+      throw new ParameterResolutionException(e.getClass().getName() + ": " + e.getMessage());
+    }
   }
 
   /**
@@ -56,9 +82,11 @@ public class GeneratorManager {
    */
   public GeneratorDescription getGeneratorDescription(ParameterContext parameterContext)
       throws AmbiguousGeneratorException {
-    Queue<GeneratorDescription> descriptions = new PriorityQueue<>(Comparator.reverseOrder());
-    for (GeneratorDescription description : this.descriptions) {
-      if (description.supports(parameterContext)) {
+    Queue<GeneratorDescription> descriptions =
+        new PriorityQueue<>((a, b) -> Integer.compare(b.priority(), a.priority()));
+
+    for (GeneratorDescription description : this.descriptions.keySet()) {
+      if (canProvideValue(description, parameterContext)) {
         descriptions.offer(description);
       }
     }
@@ -68,6 +96,26 @@ public class GeneratorManager {
     }
 
     return checkGeneratorAmbiguity(descriptions);
+  }
+
+  /**
+   * Returns whether the {@link Generator} can provide a value
+   * which is described by the {@link ParameterContext}.
+   *
+   * @param description the description of the {@link Generator}
+   * @param parameterContext the context of the value to be injected
+   * @return whether the {@link Generator} can provide a value
+   *         which is described by the {@link ParameterContext}
+   */
+  private boolean canProvideValue(GeneratorDescription description, ParameterContext parameterContext) {
+    Class<?> targetType = parameterContext.getParameter().getType();
+    for (Class<?> cursor : description.value()) {
+      if (cursor.equals(targetType)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -85,10 +133,10 @@ public class GeneratorManager {
       throws AmbiguousGeneratorException {
     GeneratorDescription cursor = descriptions.poll();
     LinkedList<GeneratorDescription> highestPriority = new LinkedList<>();
-    int priority = cursor.getPriority();
+    int priority = Objects.requireNonNull(cursor).priority();
     highestPriority.add(cursor);
 
-    while (!descriptions.isEmpty() && (cursor = descriptions.poll()).getPriority() == priority) {
+    while (!descriptions.isEmpty() && (cursor = descriptions.poll()).priority() == priority) {
       highestPriority.add(cursor);
     }
 
