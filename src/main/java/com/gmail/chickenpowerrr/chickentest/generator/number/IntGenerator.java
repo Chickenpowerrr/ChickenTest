@@ -1,16 +1,18 @@
 package com.gmail.chickenpowerrr.chickentest.generator.number;
 
 import com.gmail.chickenpowerrr.chickentest.generator.Generator;
+import com.gmail.chickenpowerrr.chickentest.generator.GeneratorDescription;
 import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.extension.ParameterContext;
 
 /**
  * Generates a random value between
- * min (included) and max (excluded.
+ * min (included) and max (excluded).
  *
  * @author Mark van Wijk
  * @since 1.0.0
  */
+@GeneratorDescription({Integer.class, int.class})
 public class IntGenerator implements Generator<Integer> {
 
   private final int min;

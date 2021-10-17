@@ -41,14 +41,23 @@ public class ChickenTestExtension implements ParameterResolver {
   @Override
   public boolean supportsParameter(ParameterContext parameterContext,
       ExtensionContext extensionContext) throws AmbiguousGeneratorException {
-    return cachedGenerators.containsKey(parameterContext) ||
-        generatorManager.getGeneratorDescription(parameterContext) != null;
+    if (cachedGenerators.containsKey(parameterContext)) {
+      return true;
+    }
+
+    Generator<?> generator = generatorManager.getGenerator(parameterContext);
+
+    if (generator == null) {
+      return false;
+    }
+
+    cachedGenerators.put(parameterContext, generator);
+    return true;
   }
 
   /**
-   * Checks whether the generator is already cached, if so
-   * it uses this generator, otherwise it will use a new generator
-   * from the {@link GeneratorManager} to inject the value.
+   * Assumes that {@link #supportsParameter(ParameterContext, ExtensionContext)}
+   * has already cached the {@link Generator}.
    *
    * @param parameterContext the parameter context
    * @param extensionContext the extension context
@@ -57,12 +66,6 @@ public class ChickenTestExtension implements ParameterResolver {
   @Override
   public Object resolveParameter(ParameterContext parameterContext,
       ExtensionContext extensionContext) {
-    if (cachedGenerators.containsKey(parameterContext)) {
-      return cachedGenerators.get(parameterContext);
-    }
-
-    return generatorManager.getGeneratorDescription(parameterContext)
-        .getGenerator(parameterContext)
-        .generate();
+    return cachedGenerators.get(parameterContext).generate();
   }
 }
