@@ -7,7 +7,6 @@ import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -16,24 +15,27 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 /**
  * Manages which generators are present and find which
- * ones are needed for certain values to be inserted.
+ * ones can inject the requested values.
  *
  * @author Mark van Wijk
  * @since 1.0.0
  */
 public class GeneratorManager {
 
-  private final Map<GeneratorDescription, Class<?>> descriptions;
+  private final GeneratorScanner generatorScanner;
 
   /**
-   * Loads the descriptions from the {@link GeneratorScanner}.
+   * Automatically scans the main generator package for
+   * built-in generators.
    */
-  public GeneratorManager() {
-    try {
-      this.descriptions = GeneratorScanner.getInstance().getGeneratorDescriptions();
-    } catch (IOException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
+  public GeneratorManager() throws IOException, ClassNotFoundException {
+    this.generatorScanner = new GeneratorScanner();
+
+    generatorScanner.addGenerators("com.gmail.chickenpowerrr.chickentest.generator");
+  }
+
+  public GeneratorScanner getGeneratorScanner() {
+    return generatorScanner;
   }
 
   /**
@@ -55,7 +57,7 @@ public class GeneratorManager {
   @SuppressWarnings("unchecked")
   public <T> Generator<T> getGenerator(ParameterContext parameterContext) throws ParameterResolutionException {
     GeneratorDescription description = getGeneratorDescription(parameterContext);
-    Class<?> generatorClass = descriptions.get(description);
+    Class<?> generatorClass = generatorScanner.getAnnotatedClass(description);
     try {
       return (Generator<T>) ReflectionHelper.getInstance(generatorClass,
           new Class[] { ParameterContext.class }, parameterContext);
@@ -81,12 +83,12 @@ public class GeneratorManager {
    * @throws AmbiguousGeneratorException if there are multiple {@link Generator}s
    *                                     which have the highest priority
    */
-  public GeneratorDescription getGeneratorDescription(ParameterContext parameterContext)
+  private GeneratorDescription getGeneratorDescription(ParameterContext parameterContext)
       throws AmbiguousGeneratorException {
     Queue<GeneratorDescription> descriptions =
         new PriorityQueue<>((a, b) -> Integer.compare(b.priority(), a.priority()));
 
-    for (GeneratorDescription description : this.descriptions.keySet()) {
+    for (GeneratorDescription description : generatorScanner.getDescriptions()) {
       if (canProvideValue(description, parameterContext)) {
         descriptions.offer(description);
       }
