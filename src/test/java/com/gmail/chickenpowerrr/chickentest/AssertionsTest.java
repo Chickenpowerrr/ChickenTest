@@ -4,7 +4,7 @@ import static com.gmail.chickenpowerrr.chickentest.assertions.Assertions.assertR
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.fail;
 
-import com.gmail.chickenpowerrr.chickentest.assertions.RelationException;
+import com.gmail.chickenpowerrr.chickentest.assertions.exception.RelationException;
 import org.junit.jupiter.api.Test;
 
 public class AssertionsTest {

@@ -1,4 +1,4 @@
-package com.gmail.chickenpowerrr.chickentest.assertions;
+package com.gmail.chickenpowerrr.chickentest.assertions.exception;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;

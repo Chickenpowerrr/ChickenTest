@@ -1,4 +1,4 @@
-package com.gmail.chickenpowerrr.chickentest.assertions;
+package com.gmail.chickenpowerrr.chickentest.assertions.sentence;
 
 @FunctionalInterface
 public interface Sentence {

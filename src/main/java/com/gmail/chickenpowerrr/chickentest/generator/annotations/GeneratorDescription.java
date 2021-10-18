@@ -1,5 +1,6 @@
-package com.gmail.chickenpowerrr.chickentest.generator;
+package com.gmail.chickenpowerrr.chickentest.generator.annotations;
 
+import com.gmail.chickenpowerrr.chickentest.generator.Generator;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,5 +1,6 @@
-package com.gmail.chickenpowerrr.chickentest.assertions;
+package com.gmail.chickenpowerrr.chickentest.assertions.sentence;
 
+import com.gmail.chickenpowerrr.chickentest.assertions.BaseRelationAssertion;
 import java.util.Map;
 
 /**

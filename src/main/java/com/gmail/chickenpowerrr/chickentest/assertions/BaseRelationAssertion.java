@@ -1,5 +1,8 @@
 package com.gmail.chickenpowerrr.chickentest.assertions;
 
+import com.gmail.chickenpowerrr.chickentest.assertions.exception.RelationException;
+import com.gmail.chickenpowerrr.chickentest.assertions.sentence.Sentence;
+import com.gmail.chickenpowerrr.chickentest.assertions.sentence.Statement;
 import java.util.Map;
 import java.util.Optional;
 
@@ -89,8 +92,8 @@ public abstract class BaseRelationAssertion implements RelationAssertion {
    * @author Mark van Wijk
    * @since 1.0.0
    */
-  protected static record EvaluationResult(Map<Integer, AssertionError> errors,
-                                           boolean relationHolds) {
+  public static record EvaluationResult(Map<Integer, AssertionError> errors,
+                                        boolean relationHolds) {
 
   }
 }

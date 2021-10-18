@@ -1,5 +1,8 @@
 package com.gmail.chickenpowerrr.chickentest.assertions;
 
+import com.gmail.chickenpowerrr.chickentest.assertions.exception.RelationException;
+import com.gmail.chickenpowerrr.chickentest.assertions.sentence.Sentence;
+
 /**
  * Tests whether certain relations between collections of
  * ordinary asserts hold. Should always be closed with
