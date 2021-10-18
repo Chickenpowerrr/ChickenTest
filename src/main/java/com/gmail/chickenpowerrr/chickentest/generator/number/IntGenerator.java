@@ -1,7 +1,7 @@
 package com.gmail.chickenpowerrr.chickentest.generator.number;
 
 import com.gmail.chickenpowerrr.chickentest.generator.Generator;
-import com.gmail.chickenpowerrr.chickentest.generator.GeneratorDescription;
+import com.gmail.chickenpowerrr.chickentest.generator.annotations.GeneratorDescription;
 import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.extension.ParameterContext;
 

@@ -1,5 +1,6 @@
 package com.gmail.chickenpowerrr.chickentest.generator;
 
+import com.gmail.chickenpowerrr.chickentest.generator.annotations.GeneratorDescription;
 import com.gmail.chickenpowerrr.chickentest.reflection.ReflectionHelper;
 import java.io.IOException;
 import java.io.Serial;

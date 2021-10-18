@@ -1,71 +1,51 @@
 package com.gmail.chickenpowerrr.chickentest.junit;
 
-import com.gmail.chickenpowerrr.chickentest.generator.Generator;
-import com.gmail.chickenpowerrr.chickentest.generator.GeneratorManager;
-import com.gmail.chickenpowerrr.chickentest.generator.GeneratorManager.AmbiguousGeneratorException;
-import java.util.HashMap;
-import java.util.Map;
+import com.gmail.chickenpowerrr.chickentest.assertions.exception.NotEvaluatedException;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 /**
  * The main extension that should be added to the JUnit classes
- * in order to make sure that the parameters can be injected.
+ * in order to make sure that the parameters can be injected
+ * and the evaluation of assertions can be checked.
  *
  * @author Mark van Wijk
  * @since 1.0.0
  */
-public class ChickenTestExtension implements ParameterResolver {
+public class ChickenTestExtension implements ParameterResolver, BeforeEachCallback,
+    AfterEachCallback {
 
-  private final GeneratorManager generatorManager;
-  private final Map<ParameterContext, Generator<?>> cachedGenerators;
+  private final EvaluationForcer evaluationForcer;
+  private final GeneratorParameterResolver parameterResolver;
 
   public ChickenTestExtension() {
-    this.generatorManager = new GeneratorManager();
-    this.cachedGenerators = new HashMap<>();
+    this.evaluationForcer = new EvaluationForcer();
+    this.parameterResolver = new GeneratorParameterResolver();
   }
 
-  /**
-   * Checks whether the generator is already cached, if so
-   * it is possible to inject the value, otherwise it will need
-   * to verify whether it is possible to get a generator from
-   * the {@link GeneratorManager}.
-   *
-   * @param parameterContext the parameter context
-   * @param extensionContext the extension context
-   * @return whether the value can be injected
-   * @throws AmbiguousGeneratorException if multiple generators have the same
-   *                                     priority and can all be used
-   */
   @Override
   public boolean supportsParameter(ParameterContext parameterContext,
-      ExtensionContext extensionContext) throws AmbiguousGeneratorException {
-    if (cachedGenerators.containsKey(parameterContext)) {
-      return true;
-    }
-
-    Generator<?> generator = generatorManager.getGenerator(parameterContext);
-
-    if (generator == null) {
-      return false;
-    }
-
-    cachedGenerators.put(parameterContext, generator);
-    return true;
+      ExtensionContext extensionContext) throws ParameterResolutionException {
+    return parameterResolver.supportsParameter(parameterContext, extensionContext);
   }
 
-  /**
-   * Assumes that {@link #supportsParameter(ParameterContext, ExtensionContext)}
-   * has already cached the {@link Generator}.
-   *
-   * @param parameterContext the parameter context
-   * @param extensionContext the extension context
-   * @return the value that should be injected
-   */
   @Override
   public Object resolveParameter(ParameterContext parameterContext,
-      ExtensionContext extensionContext) {
-    return cachedGenerators.get(parameterContext).generate();
+      ExtensionContext extensionContext) throws ParameterResolutionException {
+    return parameterResolver.resolveParameter(parameterContext, extensionContext);
+  }
+
+  @Override
+  public void beforeEach(ExtensionContext extensionContext) {
+    evaluationForcer.beforeEach(extensionContext);
+  }
+
+  @Override
+  public void afterEach(ExtensionContext extensionContext) throws NotEvaluatedException {
+    evaluationForcer.afterEach(extensionContext);
   }
 }

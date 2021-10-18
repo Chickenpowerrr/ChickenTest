@@ -1,11 +1,20 @@
-package com.gmail.chickenpowerrr.chickentest.assertions;
+package com.gmail.chickenpowerrr.chickentest.assertions.relation;
 
+import com.gmail.chickenpowerrr.chickentest.assertions.exception.RelationException;
+import com.gmail.chickenpowerrr.chickentest.assertions.Sentence;
+import com.gmail.chickenpowerrr.chickentest.junit.EvaluationForcer;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * Internals to implement the {@link RelationAssertion} but without
  * exposing intern functions that are irrelevant for end-users.
+ * It forces the use of the {@link EvaluationForcer}. When a new
+ * assertion is created, it will be added via
+ * {@link EvaluationForcer#addAssertion(RelationAssertion)} and it will
+ * be marked as done after a {@link #evaluate()}. Wrappers should for this
+ * reason make sure that they call {@link EvaluationForcer#addAssertion(RelationAssertion)}
+ * for their child, to make sure that they take over the responsibility.
  *
  * @author Mark van Wijk
  * @since 1.0.0
@@ -18,6 +27,8 @@ public abstract class BaseRelationAssertion implements RelationAssertion {
   public BaseRelationAssertion(int nextId, String relation) {
     this.relation = relation;
     this.nextId = nextId;
+
+    EvaluationForcer.addAssertion(this);
   }
 
   public String getRelation() {
@@ -50,6 +61,8 @@ public abstract class BaseRelationAssertion implements RelationAssertion {
 
   @Override
   public void evaluate() {
+    EvaluationForcer.finished(this);
+
     EvaluationResult evaluationResult = evaluatePart();
     if (!evaluationResult.relationHolds()) {
       throw new RelationException(relation, evaluationResult.errors());
@@ -89,8 +102,8 @@ public abstract class BaseRelationAssertion implements RelationAssertion {
    * @author Mark van Wijk
    * @since 1.0.0
    */
-  protected static record EvaluationResult(Map<Integer, AssertionError> errors,
-                                           boolean relationHolds) {
+  public static record EvaluationResult(Map<Integer, AssertionError> errors,
+                                        boolean relationHolds) {
 
   }
 }
