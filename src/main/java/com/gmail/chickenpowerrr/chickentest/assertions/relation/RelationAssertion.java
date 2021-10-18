@@ -1,7 +1,7 @@
-package com.gmail.chickenpowerrr.chickentest.assertions;
+package com.gmail.chickenpowerrr.chickentest.assertions.relation;
 
 import com.gmail.chickenpowerrr.chickentest.assertions.exception.RelationException;
-import com.gmail.chickenpowerrr.chickentest.assertions.sentence.Sentence;
+import com.gmail.chickenpowerrr.chickentest.assertions.Sentence;
 
 /**
  * Tests whether certain relations between collections of
@@ -9,7 +9,7 @@ import com.gmail.chickenpowerrr.chickentest.assertions.sentence.Sentence;
  * an {@link #evaluate()}.
  *
  * @author Mark van Wijk
- * @since 1.0.9
+ * @since 1.0.0
  */
 public interface RelationAssertion {
 

@@ -1,5 +1,6 @@
-package com.gmail.chickenpowerrr.chickentest.assertions;
+package com.gmail.chickenpowerrr.chickentest.assertions.relation;
 
+import com.gmail.chickenpowerrr.chickentest.junit.EvaluationForcer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -17,6 +18,8 @@ public class BinaryRelationAssertion extends BaseRelationAssertion {
   private final BiFunction<Boolean, Boolean, Boolean> operator;
 
   /**
+   * Sets the values and takes over the responsibility of being
+   *
    * @param nextId the id for the next statement
    * @param left the left side of the operator
    * @param right the right side of the operator
@@ -29,6 +32,9 @@ public class BinaryRelationAssertion extends BaseRelationAssertion {
     this.left = left;
     this.right = right;
     this.operator = operator;
+
+    EvaluationForcer.finished(left);
+    EvaluationForcer.finished(right);
   }
 
   /**

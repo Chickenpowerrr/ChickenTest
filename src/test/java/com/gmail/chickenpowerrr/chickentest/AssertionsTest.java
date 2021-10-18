@@ -5,8 +5,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.fail;
 
 import com.gmail.chickenpowerrr.chickentest.assertions.exception.RelationException;
+import com.gmail.chickenpowerrr.chickentest.junit.ChickenTestExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(ChickenTestExtension.class)
 public class AssertionsTest {
 
   @Test
