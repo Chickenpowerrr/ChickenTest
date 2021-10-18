@@ -1,6 +1,7 @@
 package com.gmail.chickenpowerrr.chickentest.junit;
 
 import com.gmail.chickenpowerrr.chickentest.assertions.exception.NotEvaluatedException;
+import java.io.IOException;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -22,7 +23,7 @@ public class ChickenTestExtension implements ParameterResolver, BeforeEachCallba
   private final EvaluationForcer evaluationForcer;
   private final GeneratorParameterResolver parameterResolver;
 
-  public ChickenTestExtension() {
+  public ChickenTestExtension() throws IOException, ClassNotFoundException {
     this.evaluationForcer = new EvaluationForcer();
     this.parameterResolver = new GeneratorParameterResolver();
   }

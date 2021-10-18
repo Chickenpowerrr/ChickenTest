@@ -3,6 +3,8 @@ package com.gmail.chickenpowerrr.chickentest.junit;
 import com.gmail.chickenpowerrr.chickentest.generator.Generator;
 import com.gmail.chickenpowerrr.chickentest.generator.GeneratorManager;
 import com.gmail.chickenpowerrr.chickentest.generator.GeneratorManager.AmbiguousGeneratorException;
+import com.gmail.chickenpowerrr.chickentest.generator.GeneratorScanner;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -21,7 +23,7 @@ class GeneratorParameterResolver implements ParameterResolver {
   private final GeneratorManager generatorManager;
   private final Map<ParameterContext, Generator<?>> cachedGenerators;
 
-  public GeneratorParameterResolver() {
+  public GeneratorParameterResolver() throws IOException, ClassNotFoundException {
     this.generatorManager = new GeneratorManager();
     this.cachedGenerators = new HashMap<>();
   }
@@ -41,6 +43,10 @@ class GeneratorParameterResolver implements ParameterResolver {
   @Override
   public boolean supportsParameter(ParameterContext parameterContext,
       ExtensionContext extensionContext) throws AmbiguousGeneratorException {
+    if (parameterContext.getParameter().getType().equals(GeneratorScanner.class)) {
+      return true;
+    }
+
     if (cachedGenerators.containsKey(parameterContext)) {
       return true;
     }
@@ -66,6 +72,10 @@ class GeneratorParameterResolver implements ParameterResolver {
   @Override
   public Object resolveParameter(ParameterContext parameterContext,
       ExtensionContext extensionContext) {
+    if (parameterContext.getParameter().getType().equals(GeneratorScanner.class)) {
+      return generatorManager.getGeneratorScanner();
+    }
+
     return cachedGenerators.get(parameterContext).generate();
   }
 }

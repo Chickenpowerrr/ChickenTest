@@ -16,8 +16,8 @@ public class DepthFirstSearchTest {
   private DepthFirstSearchAlgorithm recursive;
 
   @BeforeAll
-  public static void beforeAll() {
-    GeneratorScanner.getInstance().addPackage("com.gmail.chickenpowerrr.chickentest.examples.dfs");
+  public static void beforeAll(GeneratorScanner generatorScanner) {
+    generatorScanner.addGenerator(VertexGenerator.class);
   }
 
   @BeforeEach

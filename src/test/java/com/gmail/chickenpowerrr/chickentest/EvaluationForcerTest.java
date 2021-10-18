@@ -6,6 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.gmail.chickenpowerrr.chickentest.assertions.exception.NotEvaluatedException;
 import com.gmail.chickenpowerrr.chickentest.junit.ChickenTestExtension;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -18,7 +19,7 @@ public class EvaluationForcerTest {
   }
 
   @Test
-  public void relation_withoutEvaluation_doesThrow() {
+  public void relation_withoutEvaluation_doesThrow() throws IOException, ClassNotFoundException {
     ChickenTestExtension chickenTestExtension = new ChickenTestExtension();
 
     assertRelation(() -> assertThat(5).isEqualTo(5));
