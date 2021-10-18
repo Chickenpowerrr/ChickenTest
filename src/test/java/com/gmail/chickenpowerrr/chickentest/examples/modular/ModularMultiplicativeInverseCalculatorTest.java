@@ -1,4 +1,4 @@
-package com.gmail.chickenpowerrr.chickentest.modular;
+package com.gmail.chickenpowerrr.chickentest.examples.modular;
 
 import static com.gmail.chickenpowerrr.chickentest.assertions.Assertions.assertRelation;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

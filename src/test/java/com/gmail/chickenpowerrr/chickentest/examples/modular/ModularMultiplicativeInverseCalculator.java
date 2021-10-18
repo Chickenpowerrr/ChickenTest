@@ -1,4 +1,4 @@
-package com.gmail.chickenpowerrr.chickentest.modular;
+package com.gmail.chickenpowerrr.chickentest.examples.modular;
 
 public class ModularMultiplicativeInverseCalculator {
 
